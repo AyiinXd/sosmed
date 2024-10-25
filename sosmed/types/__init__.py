@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from .facebook import Facebook
 from .instagram import Instagram
 from .response import Response
 from .tiktok import TikTok
@@ -27,6 +28,7 @@ from .twitter import Twitter
 
 
 __all__ = [
+    "Facebook",
     "Instagram",
     "Response",
     "TikTok",

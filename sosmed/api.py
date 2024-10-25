@@ -24,7 +24,8 @@ import aiohttp
 import hmac
 import hashlib
 import os
-from typing import Optional
+from json import dumps
+from typing import Dict, Optional
 
 from .exceptions import SosmedError
 from .types import Response
@@ -43,15 +44,14 @@ class Api:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.142.86 Safari/537.36"
         }
 
-    async def post(self, path: str, url: Optional[str]) -> Response:
+    async def post(self, path: str, body: Optional[Dict[str, str]] = None) -> Response:
         signature = await self.createSignature(
-            url=url if url else "",
+            body=body if body else {},
             path=path,
             method="POST"
         )
         self.headers['Xd-Signature'] = signature
         self.headers['Xd-Api-Token'] = self.apiToken
-        body = {"url": url} if url else None
         async with aiohttp.ClientSession(headers=self.headers) as session:
             res = await session.post(
                 url=f"{self.baseUrl}{path}",
@@ -78,11 +78,13 @@ class Api:
 
     async def createSignature(
         self,
-        url: str,
+        body: dict,
         path: str,
         method: str,
     ):
-        msg = f"METHOD={method}; PATH={path}; TOKEN={self.apiToken}; URL={url};"
+        stringify = dumps(body).replace(" ", "").replace(", ", ",")
+        msg = f"METHOD={method}; PATH={path}; TOKEN={self.apiToken}; URL={stringify};"
+        print(msg)
         signature = hmac.new(
             bytes(self.secret, 'latin-1'),
             bytes(msg, 'latin-1'),

@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 from typing import Optional
@@ -29,6 +29,7 @@ from typing import Optional
 from .api import Api
 from .exceptions import SosmedError
 from .types import (
+    Facebook,
     Instagram,
     Response,
     TikTok,
@@ -44,26 +45,67 @@ class Sosmed(Api):
             path=path
         )
 
+    async def facebook(self, url: str) -> Facebook:
+        res = await self.post(
+            path="/facebook",
+            body={
+                "url": url
+            }
+        )
+        return Facebook(**res.data)
+
     async def instagram(self, url: str) -> Instagram:
         res = await self.post(
             path="/instagram",
-            url=url
+            body={
+                "url": url
+            }
         )
         return Instagram(**res.data)
 
     async def tiktok(self, url: str) -> TikTok:
         res = await self.post(
             path="/tiktok",
-            url=url
+            body={
+                "url": url
+            }
         )
         return TikTok(**res.data)
 
     async def twitter(self, url: str) -> Twitter:
         res = await self.post(
             path="/twitter",
-            url=url
+            body={
+                "url": url
+            }
         )
         return Twitter(**res.data)
+
+    async def vaNumber(
+        self,
+        country: str,
+        number: Optional[str] = None,
+        inbox: bool = False
+    ):
+        if inbox is True:
+            if not number:
+                raise SosmedError(
+                    "Parameter 'number' is required when 'inbox' is True"
+                )
+            data = {
+                "country": country,
+                "number": number,
+                "inbox": True
+            }
+        else:
+            data = {
+                "country": country
+            }
+        res = await self.post(
+            path="/vaNumber",
+            body=data
+        )
+        return res
 
     async def youtube(self, url: str) -> Response:
         return await self.post(

@@ -25,6 +25,14 @@ import sys
 
 from . import sosmed
 
+async def fbDl():
+    url = 'https://www.facebook.com/share/r/FcPvKv72wRFLjxVJ/';
+    res = await sosmed.facebook(url=url)
+    path = await res.download()
+    print(res.hdVideo)
+    print(path)
+
+
 async def instagramDl():
     url = 'https://www.instagram.com/reel/DA2qTBspJPh/?igsh=ZjM4M2ZydWFjYzRt';
     res = await sosmed.instagram(url=url)
@@ -36,7 +44,7 @@ async def tiktokDl():
     url = 'https://vt.tiktok.com/ZS2oQvs1s/';
     res = await sosmed.tiktok(url=url)
     path = await res.download()
-    print(res.parse())
+    print(res.video.playAddr)
     print(path)
 
 async def twitterDl():
@@ -55,6 +63,8 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     if len(sys.argv) > 1:
         command = sys.argv[1]
+        if command == "fb":
+            loop.run_until_complete(fbDl())
         if command == "ig":
             loop.run_until_complete(instagramDl())
         elif command == "tt":

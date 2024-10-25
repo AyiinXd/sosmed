@@ -20,10 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from os import getenv
+from dotenv import load_dotenv
+
 from sosmed import Sosmed
+
+load_dotenv(".env")
+
+apiToken: str = getenv("API_TOKEN")
+secret: str = getenv("SECRET")
 
 
 sosmed = Sosmed(
-    apiToken="YOUR_API_TOKEN",
-    secret="YOUR_SECRET_TOKEN"
+    apiToken=apiToken,
+    secret=secret
 )
