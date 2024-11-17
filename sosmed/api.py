@@ -128,7 +128,6 @@ class Api:
     ):
         stringify = dumps(body).replace(" ", "").replace(", ", ",")
         msg = f"METHOD={method}; PATH={path}; TOKEN={self.apiToken}; URL={stringify};"
-        print(msg)
         signature = hmac.new(
             bytes(self.secret, 'latin-1'),
             bytes(msg, 'latin-1'),

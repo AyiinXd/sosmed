@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import os
+import platform
 import re
 import shutil
 import sys
@@ -45,8 +46,12 @@ if sys.argv[-1] == "publish":
     clearFolder("dist")
     clearFolder("sosmed.egg-info")
     os.system("pip install twine setuptools")
-    os.system("python3 setup.py sdist")
-    os.system("twine upload dist/*")
+    if platform.system() == "Windows":
+        os.system("python setup.py sdist")
+        os.system("python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*")
+    else:
+        os.system("python3 setup.py sdist")
+        os.system("twine upload dist/*")
     sys.exit()
 
 
