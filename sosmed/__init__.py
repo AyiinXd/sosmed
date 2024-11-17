@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 from typing import Optional
@@ -31,14 +31,13 @@ from .exceptions import SosmedError
 from .types import (
     Facebook,
     Instagram,
-    Response,
     TikTok,
     Twitter
 )
 
 
 class Sosmed(Api):
-    def __init__(self, apiToken: str, secret: str, path: Optional[str] = None):
+    def __init__(self, apiToken: Optional[str] = None, secret: Optional[str] = None, path: Optional[str] = None):
         super().__init__(
             apiToken=apiToken,
             secret=secret,
@@ -52,7 +51,7 @@ class Sosmed(Api):
                 "url": url
             }
         )
-        return Facebook(**res.data)
+        return Facebook(**res.responseData)
 
     async def instagram(self, url: str) -> Instagram:
         res = await self.post(
@@ -61,7 +60,7 @@ class Sosmed(Api):
                 "url": url
             }
         )
-        return Instagram(**res.data)
+        return Instagram(**res.responseData)
 
     async def tiktok(self, url: str) -> TikTok:
         res = await self.post(
@@ -70,7 +69,7 @@ class Sosmed(Api):
                 "url": url
             }
         )
-        return TikTok(**res.data)
+        return TikTok(**res.responseData)
 
     async def twitter(self, url: str) -> Twitter:
         res = await self.post(
@@ -79,7 +78,7 @@ class Sosmed(Api):
                 "url": url
             }
         )
-        return Twitter(**res.data)
+        return Twitter(**res.responseData)
 
     async def vaNumber(
         self,
@@ -106,9 +105,3 @@ class Sosmed(Api):
             body=data
         )
         return res
-
-    async def youtube(self, url: str) -> Response:
-        return await self.post(
-            path="/youtube",
-            url=url
-        )

@@ -20,18 +20,40 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class Response:
+
+class DataAuth:
     def __init__(self, **kwargs):
-        self.responseCode: str = kwargs.get("responseCode")
-        self.responseSuccess: bool = kwargs.get("responseSuccess", False)
-        self.responseMessage: str = kwargs.get("responseMessage", "")
-        self.responseData: dict = kwargs.get("responseData", None)
+        self.id: str = kwargs.get("id", "")
+        self.name: str = kwargs.get("name", "")
+        self.email: str = kwargs.get("email", "")
+        self.token: str = kwargs.get("token", "")
+        self.secret: str = kwargs.get("secret", "")
+        self.createdAt: str = kwargs.get("createdAt", "")
+        self.updatedAt: str = kwargs.get("updatedAt", "")
+
+    def parser(self):
+        return {
+            "_": "Data",
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "token": self.token,
+            "secret": self.secret,
+            "createdAt": self.createdAt,
+            "updatedAt": self.updatedAt
+        }
+
+
+class ResponseAuth:
+    def __init__(self, **kwargs):
+        self.success: bool = kwargs.get("success", False)
+        self.message: str = kwargs.get("message", "")
+        self.data: DataAuth = DataAuth(**kwargs.get("data", {}))
 
     def parser(self):
         return {
             "_": "Response",
-            "responseCode": self.responseCode,
-            "responseSuccess": self.responseSuccess,
-            "responseMessage": self.responseMessage,
-            "responseData": self.responseData
+            "success": self.success,
+            "message": self.message,
+            "data": self.data
         }

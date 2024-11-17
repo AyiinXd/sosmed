@@ -27,15 +27,15 @@ import os
 from json import dumps
 from typing import Dict, Optional
 
-from .exceptions import SosmedError
-from .types import Response
+from .exceptions import SosmedError, RequiredError
+from .types import Response, ResponseAuth
 
 
 class Api:
     apiToken: Optional[str]
     secret: Optional[str]
     baseUrl: str = "https://api.ayiin.fun/api"
-    def __init__(self, apiToken: str, secret: str, path: Optional[str] = None):
+    def __init__(self, apiToken: Optional[str] = None, secret: Optional[str] = None, path: Optional[str] = None):
         self.apiToken = apiToken
         self.secret = secret
         self.path = path if path else "downloads"
@@ -44,7 +44,51 @@ class Api:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.142.86 Safari/537.36"
         }
 
+    def setApiToken(self, apiToken: str):
+        self.apiToken = apiToken
+
+    def setSecret(self, secret: str):
+        self.secret = secret
+
+    async def auth(
+        self,
+        name: Optional[str] = None,
+        email: Optional[str] = None,
+        prompt: bool = False
+    ):
+        if prompt is True:
+            name = input("Input Your Name: ")
+            email = input("Input Your Email: ")
+        else:
+            if not name or not email:
+                raise RequiredError("name and email is required if prompt is False")
+            name = name
+            email = email
+
+        body = {
+            "name": name,
+            "email": email
+        }
+
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            response = await session.post(
+                url=f"{self.baseUrl}/auth",
+                json=body,
+                headers=self.headers
+            )
+            json = await response.json()
+            res: ResponseAuth = ResponseAuth(**json)
+            if res.success:
+                self.setApiToken(res.data.token)
+                self.setSecret(res.data.secret)
+                print("[Auth Sosmed] - Sosmed Auth Success now you must set apiToken and secret in Sosmed class.")
+                return res.data
+            else:
+                raise SosmedError(res.message)
+
     async def post(self, path: str, body: Optional[Dict[str, str]] = None) -> Response:
+        if not self.apiToken or not self.secret:
+            raise RequiredError("apiToken and secret is required but not found. Please set apiToken and secret in Sosmed class or call 'Sosmed.auth()' method first.")
         signature = await self.createSignature(
             body=body if body else {},
             path=path,
@@ -59,11 +103,11 @@ class Api:
                 headers=self.headers
             )
             json = await res.json()
-            response: Response = Response(**json)
-            if response.success:
-                return response
+            res: Response = Response(**json)
+            if res.responseSuccess:
+                return res
             else:
-                raise SosmedError(response.message)
+                raise SosmedError(res.responseMessage)
 
     def validatePath(self, autoClean: bool = False):
         if not os.path.exists(self.path):

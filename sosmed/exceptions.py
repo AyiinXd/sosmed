@@ -24,3 +24,8 @@
 class SosmedError(Exception):
     def __init__(self, error: str):
         super().__init__(error)
+
+
+class RequiredError(SosmedError):
+    def __init__(self, error: str):
+        super().__init__(error)

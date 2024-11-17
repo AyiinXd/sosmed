@@ -25,6 +25,24 @@ import sys
 
 from . import sosmed
 
+
+async def auth(prompt=False):
+    if prompt is True:
+        # Get Token Using Prompt
+        res = await sosmed.auth(prompt=True)
+    else:
+        # Get Token Using Parameter
+        res = await sosmed.auth(email="YourEmail", name="YourName")
+    print({
+        "name": res.name,
+        "email": res.email,
+        "token": res.token,
+        "secret": res.secret,
+        "createdAt": res.createdAt,
+        "updatedAt": res.updatedAt
+    })
+
+
 async def fbDl():
     url = 'https://www.facebook.com/share/r/FcPvKv72wRFLjxVJ/';
     res = await sosmed.facebook(url=url)
@@ -54,15 +72,13 @@ async def twitterDl():
     print(res.mediaExtended[0].parse())
     print(path)
 
-async def ytDl():
-    res = await sosmed.youtube(url="https://youtu.be/uMt12Zh6mhM?si=Z_K7iyJP0jyBIwiJ")
-    print(res)
-
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     if len(sys.argv) > 1:
         command = sys.argv[1]
+        if command == "auth":
+            loop.run_until_complete(auth(True))
         if command == "fb":
             loop.run_until_complete(fbDl())
         if command == "ig":
@@ -71,7 +87,5 @@ if __name__ == "__main__":
             loop.run_until_complete(tiktokDl())
         elif command == "tw":
             loop.run_until_complete(twitterDl())
-        elif command == "yt":
-            loop.run_until_complete(ytDl())
     else:
         print("usage: python3 -m tests <ytDl>")

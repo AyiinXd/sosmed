@@ -30,8 +30,11 @@ load_dotenv(".env")
 apiToken: str = getenv("API_TOKEN")
 secret: str = getenv("SECRET")
 
-
+# With apiToken and secret
 sosmed = Sosmed(
     apiToken=apiToken,
     secret=secret
 )
+
+# Without apiToken and secret
+sosmed = Sosmed()
